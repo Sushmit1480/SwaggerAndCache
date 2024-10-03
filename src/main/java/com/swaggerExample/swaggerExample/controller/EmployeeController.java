@@ -33,7 +33,7 @@ public class EmployeeController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved list of employees"),
     })
-    @GetMapping
+    @GetMapping("")
     public List<Employee> getAllEmployees() {
         return service.getAllEmployees();
     }

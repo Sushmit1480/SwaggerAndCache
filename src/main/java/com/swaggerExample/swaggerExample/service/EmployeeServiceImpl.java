@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.swaggerExample.swaggerExample.model.Employee;
@@ -68,5 +69,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         } else {
             throw new RuntimeException("Employee not found with id: " + id);
         }
+    }
+    
+    @Scheduled(fixedRate = 10000)
+    @CachePut(value = "employees")
+    public List<Employee> refreshEmployeeCache(){
+    	System.out.println("Refreshing get All employee cache");
+    	return getAllEmployees();
     }
 }
