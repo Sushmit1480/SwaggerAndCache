@@ -8,7 +8,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +26,15 @@ public class EmployeeController {
         @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
     @PostMapping("/create")
-    public ResponseEntity<Integer> createEmployee(@RequestBody Employee employee) {
-        Employee create = service.createEmployee(employee);
+    public ResponseEntity<Integer> createEmployee(@RequestParam("firstName") String firstName,
+    		@RequestParam("lastName") String lastName,
+    		@RequestParam("mobile") String mobile,
+    		@RequestParam("email") String email,
+    		@RequestParam("salary") double salary,
+    		@RequestParam("photo") MultipartFile photoFile) throws IOException {
+    	byte[] photoBytes = photoFile.getBytes();
+    	Employee employee = new Employee(firstName, lastName, mobile, email, salary, photoBytes);
+    	Employee create = service.createEmployee(employee);
         return ResponseEntity.ok(create.getId());
     }
 
@@ -55,7 +64,16 @@ public class EmployeeController {
         @ApiResponse(responseCode = "404", description = "Employee not found")
     })
     @PutMapping("/update/{id}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable("id") Integer id, @RequestBody Employee details) {
+    public ResponseEntity<Employee> updateEmployee(@PathVariable("id") Integer id,
+    		@RequestParam("firstName") String firstName,
+    		@RequestParam("lastName") String lastName,
+    		@RequestParam("mobile") String mobile,
+    		@RequestParam("email") String email,
+    		@RequestParam("salary") double salary,
+    		@RequestParam("photo") MultipartFile photoFile) throws IOException {
+    	
+    	byte[] photoBytes = photoFile.getBytes();
+    	Employee details = new Employee(firstName, lastName, mobile, email, salary, photoBytes);
         try {
             Employee update = service.updateEmployee(id, details);
             return ResponseEntity.ok(update);
