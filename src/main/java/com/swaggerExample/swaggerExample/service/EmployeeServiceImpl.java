@@ -53,6 +53,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             update.setEmail(employee.getEmail());
             update.setSalary(employee.getSalary());
             update.setMobile(employee.getMobile());
+            update.setPhoto(employee.getPhoto());
             return repo.save(update);
         } else {
             throw new RuntimeException("Employee not found with id: " + id);
