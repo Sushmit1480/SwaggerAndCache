@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/employees")
+@CrossOrigin(origins = "http://localhost:4200")
 public class EmployeeController {
     @Autowired
     private EmployeeService service;
@@ -42,7 +43,7 @@ public class EmployeeController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved list of employees"),
     })
-    @GetMapping
+    @GetMapping()
     public List<Employee> getAllEmployees() {
         return service.getAllEmployees();
     }
@@ -65,22 +66,36 @@ public class EmployeeController {
     })
     @PutMapping("/update/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable("id") Integer id,
-    		@RequestParam("firstName") String firstName,
-    		@RequestParam("lastName") String lastName,
-    		@RequestParam("mobile") String mobile,
-    		@RequestParam("email") String email,
-    		@RequestParam("salary") double salary,
-    		@RequestParam("photo") MultipartFile photoFile) throws IOException {
-    	
-    	byte[] photoBytes = photoFile.getBytes();
-    	Employee details = new Employee(firstName, lastName, mobile, email, salary, photoBytes);
-        try {
-            Employee update = service.updateEmployee(id, details);
-            return ResponseEntity.ok(update);
-        } catch (RuntimeException e) {
+                                                   @RequestParam("firstName") String firstName,
+                                                   @RequestParam("lastName") String lastName,
+                                                   @RequestParam("mobile") String mobile,
+                                                   @RequestParam("email") String email,
+                                                   @RequestParam("salary") double salary,
+                                                   @RequestParam(value = "photo", required = false) MultipartFile photoFile) throws IOException {
+        // Retrieve the existing employee details from the database
+        Optional<Employee> existingEmployeeOptional = service.getEmployeeById(id);
+        if (!existingEmployeeOptional.isPresent()) {
             return ResponseEntity.notFound().build();
         }
+        
+        Employee existingEmployee = existingEmployeeOptional.get();
+        
+        // If a new photo is provided, update the photo; otherwise keep the old one
+        byte[] photoBytes = (photoFile != null) ? photoFile.getBytes() : existingEmployee.getPhoto();
+
+        // Update the employee details
+        existingEmployee.setFirstName(firstName);
+        existingEmployee.setLastName(lastName);
+        existingEmployee.setMobile(mobile);
+        existingEmployee.setEmail(email);
+        existingEmployee.setSalary(salary);
+        existingEmployee.setPhoto(photoBytes); // This will either be the new photo or the old one
+
+        // Save the updated employee
+        Employee updatedEmployee = service.updateEmployee(id, existingEmployee);
+        return ResponseEntity.ok(updatedEmployee);
     }
+
 
     @Operation(summary = "Delete an employee", description = "Deletes an existing employee by their ID")
     @ApiResponses(value = {
