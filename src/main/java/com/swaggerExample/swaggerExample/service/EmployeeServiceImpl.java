@@ -27,8 +27,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     // Cache the list of all employees
-    @Override
-    @Cacheable(value = "employees")
     public List<Employee> getAllEmployees() {
         return repo.findAll();
     }
@@ -72,10 +70,4 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
     
-    @Scheduled(fixedRate = 10000)
-    @CachePut(value = "employees")
-    public List<Employee> refreshEmployeeCache(){
-    	System.out.println("Refreshing get All employee cache");
-    	return getAllEmployees();
-    }
 }

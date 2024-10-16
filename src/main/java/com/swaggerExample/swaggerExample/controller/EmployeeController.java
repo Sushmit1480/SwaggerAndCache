@@ -112,12 +112,4 @@ public class EmployeeController {
         }
     }
     
-    @Operation(summary = "Testing API", description = "For Testing Purpose")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Successfully Hit The API"),
-    })
-    @GetMapping("/hi")
-    public String hello() {
-    	return "Hello My Dear";
-    }
 }
