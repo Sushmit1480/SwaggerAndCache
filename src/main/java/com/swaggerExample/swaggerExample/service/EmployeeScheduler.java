@@ -16,7 +16,8 @@ public class EmployeeScheduler {
 	
 	@Scheduled(fixedRate = 10000)
 	public void fetchAllEmployees() {
+		@SuppressWarnings("unused")
 		List<Employee> employees = employeeService.getAllEmployees();
-	    System.out.println("Fetched employees: " + employees);
+//	    System.out.println("Fetched employees: " + employees);
 	}
 }
